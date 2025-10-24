@@ -248,9 +248,9 @@ Tất cả hình ảnh được lưu trong `public/assets/` và được tổ ch
 - **Email**: info@travelexplorer.com
 - **Website**: https://travelexplorer.com
 
-## 🧹 Project Cleanup (2025-01-25)
+## 🧹 Project Cleanup & Optimization (2025-01-25)
 
-### ✅ Đã dọn dẹp các file không cần thiết:
+### ✅ Đã dọn dẹp và tối ưu dự án:
 
 #### **Debug Files (4 files)**
 - `debug_auth_flow.py` - Debug authentication flow
@@ -258,10 +258,16 @@ Tất cả hình ảnh được lưu trong `public/assets/` và được tổ ch
 - `debug_token.py` - Debug JWT tokens
 - `debug_users.py` - Debug user data
 
-#### **Duplicate Test Files (25+ files)**
-- Các file test cũ và trùng lặp đã được xóa
-- Giữ lại các file test chính và mới nhất
-- Loại bỏ các file test frontend cũ
+#### **Test Files Integration (40+ files)**
+- **Tích hợp** tất cả test files cũ vào 3 test suites chính
+- **Tạo** thư mục `tests/` với cấu trúc tối ưu:
+  - `test_auth_integration.py` - Authentication tests
+  - `test_preferences_integration.py` - Preferences & recommendations tests
+  - `test_maps_integration.py` - Maps & travel planner tests
+  - `run_all_tests.py` - Main test runner
+  - `quick_test.py` - Quick test runner
+  - `test_config.py` - Test configuration
+- **Xóa** 40+ file test cũ và trùng lặp
 
 #### **Outdated Guide Documents (3 files)**
 - `REGISTER_FLOW_TEST_GUIDE.md` - Thay thế bằng SECURE_REGISTER_FLOW_GUIDE.md
@@ -279,10 +285,33 @@ Tất cả hình ảnh được lưu trong `public/assets/` và được tổ ch
 - `check_*.py` - Các script kiểm tra database
 
 ### 📊 Kết quả:
-- **Giảm ~40+ files** không cần thiết
+- **Giảm ~80+ files** không cần thiết
 - **Tiết kiệm dung lượng** đáng kể
-- **Cấu trúc project** gọn gàng hơn
+- **Cấu trúc project** gọn gàng và tối ưu
+- **Test system** tích hợp và dễ sử dụng
 - **Dễ bảo trì** và phát triển
+
+## 🧪 Testing System
+
+### **Chạy tất cả tests:**
+```bash
+cd tests
+python run_all_tests.py
+```
+
+### **Chạy test nhanh:**
+```bash
+cd tests
+python quick_test.py
+```
+
+### **Chạy test riêng lẻ:**
+```bash
+cd tests
+python test_auth_integration.py
+python test_preferences_integration.py
+python test_maps_integration.py
+```
 
 ## 📄 License
 
