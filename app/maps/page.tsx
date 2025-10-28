@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import SummaryBar from '../components/SummaryBar';
+import GeoapifyMapWrapper from '../components/Map/GeoapifyMapWrapper';
 import LoginModal from '../components/Auth/LoginModal';
 import { useAuth } from '../hooks/useAuth';
 
@@ -156,6 +157,24 @@ const MapsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Map Section */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <GeoapifyMapWrapper
+                zoom={13}
+                categories={selectedCategory}
+                radius={radius}
+                onPlaceSelect={handlePlaceSelect}
+                onPlacesUpdate={handlePlacesUpdate}
+                selectedPlaces={selectedPlaces}
+                showRoute={showRoute}
+                height="600px"
+              />
+            </div>
+          </div>
 
           {/* Places List Sidebar */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -221,8 +240,9 @@ const MapsPage: React.FC = () => {
             )}
           </div>
         </div>
+        </div>
 
-   
+      </div>
   );
 };
 

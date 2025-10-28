@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import SummaryBar from '../components/SummaryBar';
-import MandatoryGPSMapWrapper from '../components/Map/MandatoryGPSMapWrapper';
+import GeoapifyMapWrapper from '../components/Map/GeoapifyMapWrapper';
 import LoginModal from '../components/Auth/LoginModal';
 import { useAuth } from '../hooks/useAuth';
 
@@ -136,7 +136,7 @@ const MapDemoPage: React.FC = () => {
       {/* Main Content - Mandatory GPS */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <MandatoryGPSMapWrapper
+          <GeoapifyMapWrapper
             zoom={13}
             categories={selectedCategory}
             radius={radius}
