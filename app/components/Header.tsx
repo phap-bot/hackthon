@@ -1,11 +1,19 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Header() {
   const router = useRouter()
   const { isLoggedIn, user, logout } = useAuth()
+  const [avatarKey, setAvatarKey] = useState(0)
+
+  // Force re-render khi user data thay đổi
+  useEffect(() => {
+    if (user?.avatar_url) {
+      setAvatarKey(prev => prev + 1)
+    }
+  }, [user?.avatar_url])
 
   const handleLogin = () => {
     router.push('/login')
@@ -40,10 +48,23 @@ export default function Header() {
                 <span className="text-gray-600">🔔</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-xs">
-                    {(user?.full_name || user?.username || 'A').charAt(0).toUpperCase()}
-                  </span>
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                  {user?.avatar_url ? (
+                    <img 
+                      key={`header-avatar-${avatarKey}-${user.avatar_url}`}
+                      src={`${user.avatar_url}?t=${Date.now()}`}
+                      alt="Avatar" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.log('Header avatar load error, falling back to initials');
+                        // Fallback sẽ được xử lý bởi parent div
+                      }}
+                    />
+                  ) : (
+                    <span className="text-white font-medium text-xs">
+                      {(user?.full_name || user?.username || 'A').charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <p className="font-medium text-gray-800 text-sm">{user?.full_name || user?.username || 'User'}</p>

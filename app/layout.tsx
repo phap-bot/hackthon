@@ -1,5 +1,6 @@
 import './globals.css';
 import { ModalProvider } from './contexts/ModalContext';
+import { Providers } from './providers';
 
 export const metadata = {
   title: 'Wanderlust - Travel Explorer',
@@ -19,9 +20,11 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
       </head>
       <body className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
-        <ModalProvider>
-          {children}
-        </ModalProvider>
+        <Providers>
+          <ModalProvider>
+            {children}
+          </ModalProvider>
+        </Providers>
       </body>
     </html>
   )

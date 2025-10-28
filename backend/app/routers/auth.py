@@ -169,6 +169,10 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
                 "email": user["email"],
                 "full_name": user["full_name"],
                 "avatar_url": user.get("avatar_url"),
+                "phone": user.get("phone"),
+                "date_of_birth": user.get("date_of_birth"),
+                "location": user.get("location"),
+                "bio": user.get("bio"),
                 "is_active": user.get("is_active", True),
                 "created_at": user["created_at"],
                 "updated_at": user["updated_at"]
@@ -214,9 +218,25 @@ async def update_current_user(
         if user_update.avatar_url is not None:
             update_data["avatar_url"] = user_update.avatar_url
         
-        # Update user
+        if user_update.phone is not None:
+            update_data["phone"] = user_update.phone
+        
+        if user_update.date_of_birth is not None:
+            update_data["date_of_birth"] = user_update.date_of_birth
+        
+        if user_update.location is not None:
+            update_data["location"] = user_update.location
+        
+        if user_update.bio is not None:
+            update_data["bio"] = user_update.bio
+        
+        # Convert user_id to ObjectId for MongoDB
+        from bson import ObjectId
+        user_object_id = ObjectId(current_user["user_id"])
+        
+        # Update user with proper ObjectId
         result = await db.users.update_one(
-            {"_id": current_user["user_id"]},
+            {"_id": user_object_id},
             {"$set": update_data}
         )
         
@@ -226,10 +246,36 @@ async def update_current_user(
                 detail="User not found"
             )
         
-        return {
-            "status": "success",
-            "message": "User updated successfully"
-        }
+        # Get updated user data with ObjectId
+        updated_user = await db.users.find_one(
+            {"_id": user_object_id},
+            {"hashed_password": 0}  # Exclude password from response
+        )
+        
+        # Return proper JSONResponse with clear message
+        from fastapi.responses import JSONResponse
+        
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "success",
+                "message": "Thông tin cá nhân đã được cập nhật thành công",
+                "user": {
+                    "id": str(updated_user["_id"]),
+                    "username": updated_user["username"],
+                    "email": updated_user["email"],
+                    "full_name": updated_user["full_name"],
+                    "avatar_url": updated_user.get("avatar_url"),
+                    "phone": updated_user.get("phone"),
+                    "date_of_birth": updated_user.get("date_of_birth"),
+                    "location": updated_user.get("location"),
+                    "bio": updated_user.get("bio"),
+                    "is_active": updated_user.get("is_active", True),
+                    "created_at": updated_user["created_at"],
+                    "updated_at": updated_user["updated_at"]
+                }
+            }
+        )
         
     except HTTPException:
         raise

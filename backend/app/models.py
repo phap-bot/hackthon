@@ -62,6 +62,10 @@ class UserUpdate(BaseModel):
     username: Optional[str] = Field(None, min_length=3, max_length=50)
     full_name: Optional[str] = Field(None, min_length=2, max_length=100)
     avatar_url: Optional[str] = None
+    phone: Optional[str] = Field(None, min_length=10, max_length=15)
+    date_of_birth: Optional[date] = None
+    location: Optional[str] = Field(None, min_length=2, max_length=200)
+    bio: Optional[str] = Field(None, max_length=500)
 
 class User(UserBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")

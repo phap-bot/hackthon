@@ -2,8 +2,12 @@ from fastapi import FastAPI, HTTPException, Depends, WebSocket, WebSocketDisconn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from contextlib import asynccontextmanager
+from motor.motor_asyncio import AsyncIOMotorClient
+
 import uvicorn
 import os
+import logging
+
 from dotenv import load_dotenv
 
 from app.database import init_db
@@ -11,6 +15,7 @@ from app.routers import (
     auth, 
     travel_planner, 
     itinerary, 
+    itinerary_new,
     feedback, 
     # feedback_management,
     # feedback_dashboard,
@@ -25,14 +30,15 @@ from app.middleware import LoggingMiddleware, RateLimitMiddleware
 from app.utils.logger import setup_logger
 
 # Load environment variables
-try:
-    load_dotenv()
-except Exception as e:
-    print(f"Warning: Could not load .env file: {e}")
-    print("Using default environment variables...")
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "hackthon")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # Setup logger
 logger = setup_logger(__name__)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
@@ -59,7 +65,6 @@ app = FastAPI(
 # Configure JSON encoding for UTF-8
 import json
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 
 # Override JSON encoder to handle UTF-8 properly
 import uvicorn
@@ -85,12 +90,16 @@ origins = [
     "http://127.0.0.1:3003",
     "http://127.0.0.1:3004",
     "http://127.0.0.1:3005",
-    "http://127.0.0.1:3006"
+    "http://127.0.0.1:3006",
+    # Cho phép ngrok và devtunnels
+    "https://*.ngrok-free.app",
+    "https://*.devtunnels.ms",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.(ngrok-free\.app|devtunnels\.ms)",  # Regex cho ngrok và devtunnels
     allow_credentials=True,
     allow_methods=["*"],      # Cho phép tất cả các phương thức: GET, POST, PUT, DELETE
     allow_headers=["*"],      # Cho phép tất cả headers (bao gồm Authorization)
@@ -107,6 +116,7 @@ security = HTTPBearer()
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(preferences.router, prefix="/api", tags=["preferences"])  # Move before itinerary
 app.include_router(travel_planner.router, prefix="/api", tags=["travel-planner"])
+app.include_router(itinerary_new.router)  # New AI itinerary router - must come first
 app.include_router(itinerary.router, prefix="/api", tags=["itinerary"])  # Generic {trip_id} route comes last
 app.include_router(feedback.router, prefix="/api", tags=["feedback"])
 # app.include_router(feedback_management.router, prefix="/api", tags=["feedback-management"])

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../hooks/useAuth'
 import Layout from '../components/Layout'
+import SurveyCheckRoute from '../components/SurveyCheckRoute'
 import UserMenu from '../components/UserMenu'
 import QuickActions from '../components/Dashboard/QuickActions'
 import MyTrips from '../components/Dashboard/MyTrips'
@@ -138,36 +139,76 @@ export default function DashboardPage() {
   }
 
   // Auth check is handled by Layout component
+  // SurveyCheckRoute must be outside Layout to check before rendering
 
   return (
-    <Layout>
-      {/* Header */}
-      <header className="relative z-10 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-md">
+    <SurveyCheckRoute>
+      <Layout>
+        {/* Header */}
+        <header className="relative z-10 bg-white dark:bg-gray-800/50 backdrop-blur-sm shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between lg:justify-end h-20">
-            <button className="lg:hidden p-2 text-gray-600 dark:text-gray-300">
-              <span className="material-symbols-outlined text-3xl">menu</span>
-            </button>
-            <UserMenu />
-          </div>
-        </div>
-      </header>
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <div className="flex items-center gap-2 text-gray-800 dark:text-white">
+              <span className="material-symbols-outlined text-primary text-3xl">travel_explore</span>
+              <h1 className="text-2xl font-bold">Wanderlust</h1>
+            </div>
 
-        {/* Main Content */}
-        <main className="flex-grow">
-          {/* Welcome Section */}
-          <div className="bg-gray-50 dark:bg-gray-900/50 py-16">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            {/* Navigation */}
+            <div className="flex items-center gap-2">
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center gap-2 border-r border-gray-200 dark:border-gray-700 pr-2">
+                <a className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 font-medium" href="#">
+                  <span className="material-symbols-outlined">add_circle</span>
+                  <span>Tạo lịch trình</span>
+                </a>
+                <a className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 font-medium" href="#">
+                  <span className="material-symbols-outlined">explore</span>
+                  <span>Khám phá</span>
+                </a>
+                <a className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 font-medium" href="#">
+                  <span className="material-symbols-outlined">map</span>
+                  <span>Bản đồ</span>
+                </a>
+              </div>
+
+              {/* Search & Notifications */}
+              <button className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700/50">
+                <span className="material-symbols-outlined">search</span>
+              </button>
+              <button className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700/50">
+                <span className="material-symbols-outlined">notifications</span>
+                <span className="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>
+              </button>
+
+              {/* User Menu */}
+              <UserMenu />
+            </div>
+        </div>
+      </div>
+    </header>
+
+    {/* Main Content */}
+    <main className="flex-grow">
+          {/* Welcome Section with Background */}
+          <div className="relative bg-gray-50 dark:bg-gray-900/50 py-16 overflow-hidden">
+            <img 
+              alt="Vịnh Hạ Long" 
+              className="absolute inset-0 w-full h-full object-cover object-center opacity-20 dark:opacity-10" 
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIsiIZwyIGammpDtlwvti5ki1CZY83-NeURJ50c77xoZQQ3pw_E106fjhhhES8hqeeC2AK17Lq7vp5_h2ohq4eIxsgtMrmWLNku7d0Auvwdq8LqPE7oQIbDGflxMXJHnBnNbMQ5ulOKTVY7-GmmhNOS9iQwW3FsvQvrxHzLWOl1ex2Yzb8A7VkguPmYwvXEnRpi1zp2dazKJeSaTZWGjC34zUfZW9oIeZVesomUDP4ebvfriQPoQCAnJoZuce1sCL-MGypFft3wxI" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent"></div>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
               <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Chào mừng trở lại, {user?.full_name || user?.username || 'An'}!</h2>
-              <p className="mt-2 text-gray-600 dark:text-gray-300">Bảng điều khiển cá nhân của bạn đã sẵn sàng. Hãy khám phá ngay!</p>
+              <p className="mt-2 text-gray-600 dark:text-gray-300">Khám phá vẻ đẹp Việt Nam ngay từ đây. Bảng điều khiển của bạn đã sẵn sàng!</p>
             </div>
           </div>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* AI Planner Highlight Section */}
-          <section className="mb-12">
-            <AIPlannerHighlight />
-          </section>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* AI Planner Highlight Section */}
+      <section className="mb-12">
+        <AIPlannerHighlight />
+      </section>
 
           {/* Quick Actions Section */}
           <section className="mb-12">
@@ -193,18 +234,19 @@ export default function DashboardPage() {
               />
             </section>
 
-            {/* Discover Posts Section */}
-            <section>
-              <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Khám phá Việt Nam qua những bài viết</h3>
-              <DiscoverPosts />
-            </section>
-          </div>
-        </main>
+      {/* Discover Posts Section */}
+      <section>
+        <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Khám phá Việt Nam qua những bài viết</h3>
+        <DiscoverPosts />
+      </section>
+    </div>
+    </main>
 
-      {/* Floating Support Button */}
-      <button className="fixed bottom-6 right-6 bg-primary text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-opacity-90 transition-transform hover:scale-110">
-        <span className="material-symbols-outlined text-3xl">support_agent</span>
-      </button>
-    </Layout>
+    {/* Floating Support Button */}
+    <button className="fixed bottom-6 right-6 bg-primary text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-opacity-90 transition-transform hover:scale-110">
+      <span className="material-symbols-outlined text-3xl">support_agent</span>
+    </button>
+      </Layout>
+    </SurveyCheckRoute>
   )
 }

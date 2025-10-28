@@ -151,7 +151,10 @@ export default function PreferencesPage() {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('access_token')
+      console.log('Preferences Submit: Starting...')
+      
       if (!token) {
+        console.error('Preferences Submit: No token found')
         alert('Vui lòng đăng nhập lại')
         router.push('/login')
         return
@@ -159,15 +162,17 @@ export default function PreferencesPage() {
 
       // Map frontend preferences to backend survey format
       const surveyData = {
-        travel_type: mapTravelType(preferences.travelTypes[0]),
-        dream_destination: mapDreamDestination(preferences.dreamDestinations[0]),
+        travel_type: mapTravelType(preferences.travelTypes[0] || preferences.travelTypes[0]),
+        dream_destination: mapDreamDestination(preferences.dreamDestinations[0] || 'beach'),
         activities: mapActivities(preferences.activities),
-        budget_range: mapBudgetLevel(preferences.budgetLevel),
-        travel_style: mapTravelStyle(preferences.budgetLevel),
-        accommodation_type: mapAccommodation(preferences.accommodation),
-        group_size: parseInt(preferences.groupSize) || 2,
-        duration_preference: mapDuration(preferences.tripDuration)
+        budget_range: mapBudgetLevel(preferences.budgetLevel || 'medium'),
+        travel_style: mapTravelStyle(preferences.budgetLevel || 'medium'),
+        accommodation_type: mapAccommodation(preferences.accommodation || 'hotel'),
+        group_size: parseInt(preferences.groupSize || '2'),
+        duration_preference: mapDuration(preferences.tripDuration || 'medium')
       }
+
+      console.log('Preferences Submit: Sending data to backend:', surveyData)
 
       const response = await fetch('/api/survey/submit', {
         method: 'POST',
@@ -178,7 +183,10 @@ export default function PreferencesPage() {
         body: JSON.stringify(surveyData)
       })
 
+      console.log('Preferences Submit: Response status:', response.status)
+
       const data = await response.json()
+      console.log('Preferences Submit: Response data:', data)
 
       if (response.ok) {
         console.log('Preferences saved successfully:', data)
@@ -187,10 +195,9 @@ export default function PreferencesPage() {
         if (data.recommendations) {
           console.log('Recommendations:', data.recommendations)
         }
-        // Kiểm tra token trước khi redirect
-        const currentToken = localStorage.getItem('access_token')
-        console.log('Current token before redirect:', currentToken ? 'exists' : 'missing')
-        router.push('/dashboard')
+        // Redirect to dashboard
+        console.log('Preferences Submit: Redirecting to dashboard...')
+        window.location.href = '/dashboard'
       } else {
         console.error('Preferences save failed:', data)
         alert('Có lỗi xảy ra: ' + (data.error || 'Không thể lưu sở thích'))

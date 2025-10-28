@@ -8,6 +8,10 @@ interface User {
   email: string;
   full_name: string;
   avatar_url?: string;
+  phone?: string;
+  date_of_birth?: string;
+  location?: string;
+  bio?: string;
 }
 
 interface AuthState {
@@ -31,7 +35,7 @@ export const useAuth = () => {
   const checkAuthStatus = async () => {
     try {
       // Check if user is logged in by verifying token
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
       
       if (!token) {
         console.log('No token found, user not logged in');
@@ -69,6 +73,7 @@ export const useAuth = () => {
         // Token is invalid, remove it
         console.log('Token invalid, removing from localStorage');
         localStorage.removeItem('access_token');
+        localStorage.removeItem('token');
         setAuthState({
           isLoggedIn: false,
           user: null,
@@ -123,6 +128,7 @@ export const useAuth = () => {
   const logout = () => {
     console.log('Logging out user...');
     localStorage.removeItem('access_token');
+    localStorage.removeItem('token');
     setAuthState({
       isLoggedIn: false,
       user: null,
@@ -133,6 +139,7 @@ export const useAuth = () => {
   const clearAuth = () => {
     console.log('Clearing authentication state...');
     localStorage.removeItem('access_token');
+    localStorage.removeItem('token');
     setAuthState({
       isLoggedIn: false,
       user: null,

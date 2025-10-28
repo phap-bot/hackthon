@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import Layout from '../components/Layout'
 import UserMenu from '../components/UserMenu'
+import AdvancedFilters, { AdvancedFiltersData } from '../components/Planner/AdvancedFilters'
 
 interface PlannerFormData {
   budget: string
@@ -14,6 +15,7 @@ interface PlannerFormData {
   startDate: string
   travelStyle: string
   interests: string[]
+  advancedFilters: AdvancedFiltersData
 }
 
 const PlannerPage = () => {
@@ -25,7 +27,15 @@ const PlannerPage = () => {
     destination: '',
     startDate: '',
     travelStyle: '',
-    interests: []
+    interests: [],
+    advancedFilters: {
+      tripType: [],
+      transportation: [],
+      travelStyle: [],
+      season: [],
+      activityLevel: [],
+      specialPreferences: []
+    }
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -60,25 +70,49 @@ const PlannerPage = () => {
     }))
   }
 
+  const handleAdvancedFiltersChange = (filters: AdvancedFiltersData) => {
+    setFormData(prev => ({
+      ...prev,
+      advancedFilters: filters
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      // Call FastAPI backend
-      const response = await fetch('/api/travel-planner', {
+      // Map form data to AI backend format
+      const preferences = {
+        budget: formData.budget === 'low' ? 'Tiết kiệm' : formData.budget === 'medium' ? 'Trung bình' : 'Cao cấp',
+        days: formData.days,
+        region: formData.destination || 'Quy Nhơn',
+        theme: formData.advancedFilters.travelStyle.join(', ') || 'phong cách',
+        transport: formData.advancedFilters.transportation.join(', ') || 'xe máy',
+        people: formData.people,
+      }
+
+      // Call AI backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/itinerary/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          preferences,
+          location: { lat: 13.782, lon: 109.219 } // Fallback location
+        }),
       })
 
       if (response.ok) {
         const result = await response.json()
-        // Redirect to itinerary result page with data
-        router.push(`/itinerary?tripId=${result.tripId}`)
+        console.log('Generated itinerary:', result)
+        // Store result in localStorage and redirect
+        localStorage.setItem('currentItinerary', JSON.stringify(result.data))
+        router.push(`/itinerary/detail/temp`)
       } else {
+        const errorText = await response.text()
+        console.error('Error response:', errorText)
         throw new Error('Failed to generate itinerary')
       }
     } catch (error) {
@@ -246,6 +280,9 @@ const PlannerPage = () => {
               </div>
             </div>
           </div>
+
+          {/* Advanced Filters Section */}
+          <AdvancedFilters onFiltersChange={handleAdvancedFiltersChange} />
 
           {/* Submit Button */}
           <div className="flex justify-center pt-8">

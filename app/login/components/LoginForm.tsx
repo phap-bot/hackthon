@@ -1,8 +1,12 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '../../hooks/useAuth'
+import { loginUser } from '../../lib/auth'
+import toast from 'react-hot-toast'
 
 export default function LoginForm() {
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -50,33 +54,46 @@ export default function LoginForm() {
     
     setIsLoading(true)
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        // Store token in localStorage
-        localStorage.setItem('access_token', data.access_token)
-        localStorage.setItem('user_id', data.user_id)
-        localStorage.setItem('username', data.username)
+      const response = await loginUser(formData.email, formData.password)
+      
+      if (response.access_token) {
+        // Store tokens in localStorage
+        localStorage.setItem('access_token', response.access_token)
+        if ('refresh_token' in response && response.refresh_token && typeof response.refresh_token === 'string') {
+          localStorage.setItem('refresh_token', response.refresh_token)
+        }
         
-        // Redirect to preferences page for new users
-        window.location.href = '/preferences'
+        // Kiểm tra xem người dùng đã hoàn thành khảo sát chưa
+        try {
+          console.log('Login: Checking user preferences...')
+          const prefResponse = await fetch('/api/preferences', {
+            headers: {
+              'Authorization': `Bearer ${response.access_token}`
+            }
+          })
+          
+          console.log('Login: Preferences response status:', prefResponse.status)
+          
+          // Nếu không có preferences (404) hoặc lỗi, chuyển đến trang khảo sát
+          if (!prefResponse.ok || prefResponse.status === 404) {
+            console.log('Login: Người dùng chưa hoàn thành khảo sát, chuyển đến trang khảo sát')
+            window.location.href = '/preferences'
+          } else {
+            console.log('Login: Người dùng đã hoàn thành khảo sát, chuyển đến dashboard')
+            window.location.href = '/dashboard'
+          }
+        } catch (prefError) {
+          console.error('Login: Lỗi khi kiểm tra preferences:', prefError)
+          // Nếu kiểm tra thất bại, mặc định chuyển đến trang khảo sát
+          console.log('Login: Chuyển đến trang khảo sát do lỗi kiểm tra')
+          window.location.href = '/preferences'
+        }
       } else {
-        setErrors({ general: data.error || 'Đăng nhập thất bại' })
+        setErrors({ general: 'Đăng nhập thất bại' })
       }
     } catch (error) {
       console.error('Login error:', error)
-      setErrors({ general: 'Có lỗi xảy ra, vui lòng thử lại' })
+      setErrors({ general: error instanceof Error ? error.message : 'Có lỗi xảy ra khi đăng nhập' })
     } finally {
       setIsLoading(false)
     }

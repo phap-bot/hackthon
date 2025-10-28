@@ -38,13 +38,16 @@ export default function SettingsPage() {
   })
 
   const handleSettingChange = (category: string, key: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category as keyof typeof prev],
-        [key]: value
+    setSettings(prev => {
+      const currentCategory = prev[category as keyof typeof prev] as Record<string, any> || {}
+      return {
+        ...prev,
+        [category]: {
+          ...currentCategory,
+          [key]: value
+        }
       }
-    }))
+    })
   }
 
   const handleSaveSettings = async () => {

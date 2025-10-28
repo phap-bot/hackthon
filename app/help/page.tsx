@@ -85,16 +85,16 @@ export default function HelpPage() {
     {
       icon: EnvelopeIcon,
       title: 'Email',
-      description: 'support@wanderlust.com',
+      description: 'letanphap6543@gmail.com',
       action: 'Gửi email',
       available: true
     },
     {
       icon: PhoneIcon,
       title: 'Điện thoại',
-      description: 'Hotline: 1900-xxxx',
+      description: 'Hotline: 0763537027',
       action: 'Gọi ngay',
-      available: false
+      available: true
     }
   ]
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../hooks/useAuth'
 import Layout from '../components/Layout'
+import AvatarUploadModal from '../components/AvatarUpload/AvatarUploadModal'
 import { 
   UserIcon,
   EnvelopeIcon,
@@ -25,9 +26,12 @@ export default function ProfilePage() {
     location: ''
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     if (user) {
+      console.log('User data loaded:', user)
       setFormData({
         full_name: user.full_name || '',
         username: user.username || '',
@@ -37,6 +41,12 @@ export default function ProfilePage() {
         date_of_birth: user.date_of_birth || '',
         location: user.location || ''
       })
+      // 设置头像URL với cache busting
+      if (user.avatar_url) {
+        const avatarWithCacheBust = `${user.avatar_url}?t=${Date.now()}`
+        setAvatarUrl(avatarWithCacheBust)
+        console.log('Avatar URL set from user data:', avatarWithCacheBust)
+      }
     }
   }, [user])
 
@@ -51,17 +61,77 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      // TODO: Implement API call to update user profile
-      console.log('Saving profile:', formData)
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token')
+      if (!token) {
+        alert('Vui lòng đăng nhập lại')
+        return
+      }
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Profile update - Token found:', !!token)
+
+      // Chuẩn bị dữ liệu để gửi
+      const updateData = {
+        full_name: formData.full_name,
+        username: formData.username,
+        phone: formData.phone,
+        date_of_birth: formData.date_of_birth,
+        location: formData.location,
+        bio: formData.bio
+      }
+
+      // Gọi API cập nhật profile
+      const response = await fetch('/api/auth/update-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Profile update error:', errorData)
+        
+        if (response.status === 401) {
+          alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
+          // Redirect to login
+          window.location.href = '/login'
+          return
+        }
+        
+        throw new Error(errorData.error || 'Có lỗi xảy ra khi cập nhật thông tin')
+      }
+
+      const result = await response.json()
+      
+      // Cập nhật state với dữ liệu mới từ server
+      if (result.user) {
+        setFormData(prev => ({
+          ...prev,
+          full_name: result.user.full_name || '',
+          username: result.user.username || '',
+          email: result.user.email || '',
+          phone: result.user.phone || '',
+          date_of_birth: result.user.date_of_birth || '',
+          location: result.user.location || '',
+          bio: result.user.bio || ''
+        }))
+        
+        // Cập nhật avatar nếu có với cache busting
+        if (result.user.avatar_url) {
+          const newAvatarUrl = `${result.user.avatar_url}?t=${Date.now()}`
+          setAvatarUrl(newAvatarUrl)
+          console.log('Avatar updated from profile save:', newAvatarUrl)
+        }
+      }
       
       setIsEditing(false)
-      // Show success message
+      alert(result.message || 'Cập nhật thông tin thành công!')
+      
     } catch (error) {
       console.error('Error saving profile:', error)
-      // Show error message
+      alert(error instanceof Error ? error.message : 'Có lỗi xảy ra khi lưu thông tin')
     } finally {
       setIsSaving(false)
     }
@@ -80,6 +150,54 @@ export default function ProfilePage() {
       })
     }
     setIsEditing(false)
+  }
+
+  const handleAvatarUpload = async (file: File) => {
+    try {
+      console.log('Starting avatar upload...', file.name)
+      
+      // 创建FormData对象
+      const formData = new FormData()
+      formData.append('avatar', file)
+
+      // 调用API上传头像
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token')
+      const response = await fetch('/api/auth/upload-avatar', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Upload failed')
+      }
+
+      const result = await response.json()
+      console.log('Avatar upload response:', result)
+      
+      // 更新本地头像URL với cache busting
+      const newAvatarUrl = result.avatar_url ? `${result.avatar_url}?t=${Date.now()}` : null
+      setAvatarUrl(newAvatarUrl)
+      
+      // Cập nhật user state nếu có
+      if (user) {
+        // Trigger re-render bằng cách cập nhật một state khác
+        setFormData(prev => ({ ...prev }))
+      }
+      
+      console.log('Avatar URL updated:', newAvatarUrl)
+      
+      // 显示成功消息
+      alert('Cập nhật ảnh đại diện thành công!')
+      
+    } catch (error) {
+      console.error('Avatar upload error:', error)
+      alert(`Có lỗi xảy ra khi tải lên ảnh đại diện: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw error
+    }
   }
 
   const getUserInitials = () => {
@@ -138,10 +256,29 @@ export default function ProfilePage() {
                   <div className="text-center">
                     {/* Avatar */}
                     <div className="relative inline-block">
-                      <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4">
-                        {getUserInitials()}
+                      <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4 overflow-hidden">
+                        {avatarUrl ? (
+                          <img 
+                            key={avatarUrl} // Force re-render khi avatarUrl thay đổi
+                            src={avatarUrl} 
+                            alt="Avatar" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.log('Avatar load error, falling back to initials');
+                              setAvatarUrl(null);
+                            }}
+                            onLoad={() => {
+                              console.log('Avatar loaded successfully:', avatarUrl);
+                            }}
+                          />
+                        ) : (
+                          getUserInitials()
+                        )}
                       </div>
-                      <button className="absolute bottom-2 right-2 w-10 h-10 bg-white dark:bg-gray-700 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
+                      <button 
+                        onClick={() => setIsAvatarModalOpen(true)}
+                        className="absolute bottom-2 right-2 w-10 h-10 bg-white dark:bg-gray-700 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      >
                         <CameraIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                       </button>
                     </div>
@@ -327,6 +464,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Avatar Upload Modal */}
+      <AvatarUploadModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        onUpload={handleAvatarUpload}
+        currentAvatar={avatarUrl || undefined}
+      />
     </Layout>
   )
 }

@@ -6,7 +6,6 @@ import {
   CheckIcon,
   SparklesIcon,
   StarIcon,
-  CrownIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline'
 
@@ -71,7 +70,7 @@ export default function UpgradePage() {
       ],
       limitations: [],
       popular: false,
-      icon: CrownIcon
+      icon: StarIcon
     }
   ]
 

@@ -6,18 +6,36 @@ Dự án báo cáo về website du lịch thông minh với sự hỗ trợ củ
 
 **Wanderlust** là một website du lịch hiện đại được xây dựng bằng Next.js, tích hợp công nghệ AI để giúp người dùng lập kế hoạch du lịch hoàn hảo. Website cung cấp các dịch vụ từ lập kế hoạch đến đặt vé, tìm kiếm điểm đến và hỗ trợ trong suốt chuyến đi.
 
-## 🎨 Giao diện mới
+## 🎨 Giao diện mới (Cập nhật 2025-01-26)
 
-Website đã được cập nhật với giao diện hiện đại, bao gồm:
-- **Navigation Bar**: Thiết kế lớn và nổi bật với logo Wanderlust, chiều cao 64px, shadow nhẹ và các nút đăng nhập/đăng ký được tối ưu
-- **Hero Section**: Khu vực chào mừng với thanh tìm kiếm và nút lập kế hoạch chuyến đi
-- **Upcoming Trips**: Hiển thị các chuyến đi sắp tới với trạng thái và thông tin chi tiết
-- **Explore Section**: Banner lớn với hình ảnh nền và lời kêu gọi hành động
-- **Destination Suggestions**: Gợi ý các điểm đến phổ biến với hình ảnh đẹp
-- **Smart Floating Chat**: Chat hỗ trợ thông minh có thể kéo thả, tự động ẩn khi cuộn và tránh che nội dung
+### 🏠 Landing Page
+Website đã được cập nhật với giao diện hiện đại, hiện đại và chuyên nghiệp:
 
-### 🏠 User Dashboard (Mới)
-Sau khi đăng nhập và hoàn thành khảo sát sở thích, người dùng sẽ được chuyển đến Dashboard cá nhân với:
+- **Fixed Header**: Header cố định với logo Wanderlust, navigation menu và nút đăng nhập/đăng ký
+- **Hero Section**: Banner lớn với hình ảnh nền tuyệt đẹp, gradient overlay và call-to-action buttons
+- **Features Section**: Giới thiệu các tính năng chính với hình ảnh và mô tả chi tiết
+- **Call-to-Action**: Phần kêu gọi đăng ký với thiết kế nổi bật
+- **Footer**: Footer đầy đủ với thông tin công ty, links và social media
+
+### 🎯 Tính năng Landing Page
+- **Responsive Design**: Tối ưu cho mọi thiết bị từ mobile đến desktop
+- **Modern UI/UX**: Thiết kế hiện đại với gradient, shadow và animations
+- **Fixed Header**: Header cố định khi scroll, dễ dàng navigation
+- **Hero Background**: Hình ảnh nền đẹp mắt với gradient overlay
+- **Material Icons**: Sử dụng Material Symbols icons thống nhất
+- **Smooth Animations**: Transitions mượt mà và hover effects
+
+### 📱 Dashboard & Internal Pages
+- **Navigation Bar**: Menu điều hướng với các chức năng chính
+- **User Menu**: Dropdown menu với thông tin người dùng và các tùy chọn
+- **Quick Actions**: Truy cập nhanh các chức năng phổ biến
+- **My Trips**: Quản lý các chuyến đi của bạn
+- **Recommendations**: Gợi ý cá nhân hóa dựa trên sở thích
+- **Discover Posts**: Khám phá các bài viết du lịch
+
+### 🏠 User Dashboard
+Sau khi đăng nhập, người dùng sẽ được chuyển đến Dashboard cá nhân với:
+- **Welcome Banner**: Banner chào mừng với hình ảnh nền và thông báo cá nhân hóa
 - **Truy cập nhanh**: 4 chức năng chính (AI lập kế hoạch, Bản đồ thời gian thực, Khám phá địa điểm, Lịch trình AI đề xuất)
 - **Chuyến đi của bạn**: Hiển thị các chuyến đi gần đây với trạng thái và chi phí
 - **Gợi ý theo sở thích**: Hiển thị điểm đến, hoạt động, ngân sách và lịch trình được AI đề xuất
@@ -26,6 +44,7 @@ Sau khi đăng nhập và hoàn thành khảo sát sở thích, người dùng s
 ## ✨ Tính năng chính
 
 ### Frontend Features
+- 🗺️ **Smart Maps (Realtime)**: Bản đồ thông minh realtime với Geoapify tiles + React Leaflet, hiển thị vị trí user và địa điểm xung quanh theo category
 - 🤖 **AI Travel Planner**: Tạo lịch trình du lịch thông minh dựa trên sở thích và ngân sách
 - ✈️ **Đặt vé & khách sạn**: Tự động tìm kiếm và đặt vé máy bay, khách sạn với giá tốt nhất
 - 🎯 **Trải nghiệm cá nhân**: Tùy chỉnh chuyến đi theo phong cách cá nhân
@@ -34,8 +53,12 @@ Sau khi đăng nhập và hoàn thành khảo sát sở thích, người dùng s
 - 📱 **Responsive Design**: Tối ưu cho mọi thiết bị
 - 🔐 **Đăng ký/Đăng nhập**: Hệ thống xác thực người dùng với Google và Facebook
 - ✅ **Form Validation**: Xác thực dữ liệu đầu vào với thông báo lỗi rõ ràng
+- 📸 **Avatar Upload**: Tải lên ảnh đại diện từ camera hoặc thư viện ảnh
+- 🎛️ **Advanced Filters**: Bộ lọc nâng cao cho AI trip planner với 6 nhóm tùy chỉnh
+- 🔄 **Profile Sync**: Đồng bộ hóa thông tin profile với MongoDB database
 
 ### Backend Features
+- 🗺️ **Geoapify Integration**: Tích hợp Geoapify Places API để lấy dữ liệu địa điểm thực tế với categories
 - 🔐 **JWT Authentication**: Hệ thống xác thực bảo mật với JWT tokens
 - 📊 **Preference Survey System**: Khảo sát sở thích du lịch với gợi ý cá nhân hóa
 - 🗺️ **Real-time Maps**: Tích hợp Google Maps API với tìm kiếm địa điểm và định tuyến
@@ -291,6 +314,131 @@ Tất cả hình ảnh được lưu trong `public/assets/` và được tổ ch
 - **Test system** tích hợp và dễ sử dụng
 - **Dễ bảo trì** và phát triển
 
+## 📸 Avatar Upload System (Mới - 2025-01-26)
+
+### **Tính năng:**
+- **Camera Access**: Cho phép chụp ảnh trực tiếp từ camera thiết bị
+- **Gallery Selection**: Chọn ảnh từ thư viện ảnh của thiết bị
+- **Image Preview**: Xem trước ảnh trước khi xác nhận
+- **File Validation**: Kiểm tra định dạng và kích thước file
+- **Responsive Modal**: Giao diện modal responsive cho mọi thiết bị
+
+### **Cách sử dụng:**
+1. Truy cập trang Profile (`/profile`)
+2. Click vào biểu tượng camera trên avatar
+3. Chọn "Từ thư viện" hoặc "Chụp ảnh"
+4. Xem trước và xác nhận ảnh
+5. Ảnh sẽ được lưu và hiển thị ngay lập tức
+
+### **Hỗ trợ định dạng:**
+- **File types**: JPG, PNG, GIF
+- **Max size**: 5MB
+- **Auto resize**: Tự động điều chỉnh kích thước
+
+### **API Endpoint:**
+```
+POST /api/auth/upload-avatar
+Content-Type: multipart/form-data
+Body: { avatar: File }
+```
+
+## 🎛️ Advanced Filters System (Mới - 2025-01-26)
+
+### **Tính năng:**
+- **6 Nhóm Filter**: Loại chuyến đi, Phương tiện, Phong cách, Mùa, Hoạt động, Ưu tiên
+- **AI Logic Integration**: Mỗi filter có mục đích cụ thể để AI hiểu và tạo lịch trình phù hợp
+- **Collapsible UI**: Giao diện có thể thu gọn để không làm rối UI
+- **Smart Selection**: Hiển thị số lượng đã chọn và cho phép reset
+
+### **6 Nhóm Filter:**
+
+#### 1️⃣ **Loại chuyến đi** 🎯
+- Nghỉ dưỡng 🏖️, Phiêu lưu ⛰️, Văn hoá 🏛️, Ẩm thực 🍜, Lãng mạn ❤️, Công tác 💼
+- **AI Logic**: Chọn gợi ý phù hợp (văn hoá → chùa, bảo tàng; phiêu lưu → trekking)
+
+#### 2️⃣ **Phương tiện di chuyển** 🚗
+- Xe máy 🛵, Ô tô 🚗, Máy bay ✈️, Tàu hoả 🚂
+- **AI Logic**: Tính quãng đường + thời gian di chuyển thực tế
+
+#### 3️⃣ **Phong cách du lịch** 🎨
+- Tự túc 🗺️, Theo tour 👥, Kết hợp 🔄
+- **AI Logic**: Ảnh hưởng lịch trình chi tiết (tự túc → nhiều thời gian linh hoạt)
+
+#### 4️⃣ **Mùa / thời gian** 🌤️
+- Xuân 🌸, Hè ☀️, Thu 🍂, Đông ❄️
+- **AI Logic**: Chọn địa điểm phù hợp mùa du lịch
+
+#### 5️⃣ **Mức độ hoạt động** ⚡
+- Thư giãn 😌, Trung bình ⚖️, Năng động 🏃
+- **AI Logic**: Cân bằng giữa tham quan và nghỉ ngơi
+
+#### 6️⃣ **Ưu tiên đặc biệt** ⭐
+- Có biển 🏖️, Có đồ ăn địa phương 🍜, Ít đông 🤫, Phù hợp gia đình 👨‍👩‍👧‍👦
+- **AI Logic**: Lọc theo preference thực tế
+
+### **Cách sử dụng:**
+1. Truy cập trang Planner (`/planner`)
+2. Điền thông tin cơ bản (ngân sách, số người, số ngày)
+3. Click "Bộ lọc nâng cao" để mở rộng
+4. Chọn các filter phù hợp
+5. AI sẽ tạo lịch trình dựa trên tất cả thông tin
+
+## 🔄 Profile Sync System (Mới - 2025-01-26)
+
+### **Vấn đề đã giải quyết:**
+- **UI cập nhật nhưng chưa sync DB**: Trước đây chỉ cập nhật state frontend
+- **Thiếu API endpoint**: Backend chưa hỗ trợ đầy đủ các trường profile
+- **Không đồng bộ dữ liệu**: Thay đổi trên UI không được lưu vào database
+
+### **Giải pháp 4 bước:**
+
+#### 1️⃣ **Mở rộng UserUpdate Model**
+```python
+class UserUpdate(BaseModel):
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
+    full_name: Optional[str] = Field(None, min_length=2, max_length=100)
+    avatar_url: Optional[str] = None
+    phone: Optional[str] = Field(None, min_length=10, max_length=15)
+    date_of_birth: Optional[date] = None
+    location: Optional[str] = Field(None, min_length=2, max_length=200)
+    bio: Optional[str] = Field(None, max_length=500)
+```
+
+#### 2️⃣ **Cập nhật Backend API**
+- **Endpoint**: `PUT /auth/me`
+- **Validation**: Kiểm tra username trùng lặp
+- **Response**: Trả về đầy đủ thông tin user đã cập nhật
+- **Error Handling**: Xử lý lỗi chi tiết
+
+#### 3️⃣ **Tạo Frontend API Route**
+- **File**: `app/api/auth/update-profile/route.ts`
+- **Method**: PUT
+- **Authentication**: JWT token validation
+- **Proxy**: Chuyển tiếp request đến backend
+
+#### 4️⃣ **Cập nhật Profile Page**
+- **Real-time sync**: Cập nhật UI ngay sau khi lưu thành công
+- **Error handling**: Hiển thị thông báo lỗi chi tiết
+- **Loading states**: Hiển thị trạng thái đang lưu
+- **Form validation**: Kiểm tra dữ liệu trước khi gửi
+
+### **Flow hoạt động:**
+1. User click "Chỉnh sửa" → Form chuyển sang chế độ edit
+2. User thay đổi thông tin → State được cập nhật
+3. User click "Lưu" → Gửi PUT request đến `/api/auth/update-profile`
+4. Frontend API chuyển tiếp đến backend `PUT /auth/me`
+5. Backend cập nhật MongoDB → Trả về dữ liệu mới
+6. Frontend nhận response → Cập nhật UI với dữ liệu mới
+7. Hiển thị thông báo thành công
+
+### **Tính năng:**
+- ✅ **Đồng bộ real-time** với MongoDB
+- ✅ **Validation đầy đủ** cho tất cả trường
+- ✅ **Error handling** chi tiết
+- ✅ **Loading states** cho UX tốt hơn
+- ✅ **Token authentication** bảo mật
+- ✅ **Response caching** để tối ưu performance
+
 ## 🧪 Testing System
 
 ### **Chạy tất cả tests:**
@@ -312,6 +460,61 @@ python test_auth_integration.py
 python test_preferences_integration.py
 python test_maps_integration.py
 ```
+
+## 🎨 Design Updates (2025-01-26)
+
+### Landing Page Redesign
+Đã cập nhật giao diện landing page với thiết kế mới hiện đại và chuyên nghiệp:
+
+**Changes:**
+- ✨ Thêm header cố định với logo và navigation menu
+- 🎨 Hero section với hình ảnh nền đẹp mắt và gradient overlay
+- 📸 Features section giới thiệu tính năng với images
+- 🎯 Call-to-action section kêu gọi đăng ký
+- 🦶 Footer đầy đủ với thông tin công ty và social media links
+- 📱 Responsive design tối ưu cho mọi thiết bị
+
+**Components Created:**
+- `app/page.tsx` - Landing page mới với hero, features, CTA sections
+- `app/components/Footer.tsx` - Footer component với links và social media
+- `app/components/SurveyCheckRoute.tsx` - 组件检查用户是否已完成调查
+
+**Dashboard Updates:**
+- Cập nhật header dashboard với Material Symbols icons
+- Thêm logo Wanderlust và navigation menu
+- Cập nhật UserMenu với dropdown menu style mới
+- Thêm welcome banner với background image
+
+### 🔐 Login Flow Improvements (2025-01-26)
+
+**问题修复:**
+- ✅ 修复登录后直接跳转到dashboard，跳过调查步骤的问题
+- ✅ 登录后自动检查用户是否完成调查
+- ✅ 未完成调查的用户自动重定向到 `/preferences`
+- ✅ 已完成调查的用户直接进入 `/dashboard`
+
+**修改的文件:**
+- `app/login/components/LoginForm.tsx` - 添加调查检查逻辑
+- `app/components/SurveyCheckRoute.tsx` - 新建组件用于检查调查状态
+- `app/dashboard/page.tsx` - 添加 SurveyCheckRoute 保护
+
+**流程:**
+1. Người dùng đăng nhập → Kiểm tra có preferences không
+2. Nếu không có preferences → Redirect đến `/preferences` 
+3. Hoàn thành khảo sát → Submit đến backend → Redirect đến `/dashboard`
+4. Lần đăng nhập sau → Có preferences → Vào thẳng `/dashboard`
+
+**Debug Guide:**
+- Mở Chrome DevTools (F12)
+- Xem Console để kiểm tra các log messages
+- Kiểm tra Network tab để xem API calls
+- Tìm "Login:" và "SurveyCheck:" logs để debug
+
+**Cách test:**
+1. Clear localStorage: `localStorage.clear()`
+2. Tạo tài khoản mới hoặc login
+3. Xem console để debug flow
+4. Kiểm tra xem có chuyển đến `/preferences` không
 
 ## 📄 License
 
