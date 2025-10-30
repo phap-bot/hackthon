@@ -105,7 +105,7 @@ export default function LoginForm() {
       <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-2 mb-3">
           <span className="material-symbols-outlined text-primary text-xl">travel_explore</span>
-          <h1 className="text-lg font-bold text-gray-900">Travel Co.</h1>
+          <h1 className="text-lg font-bold text-gray-900">Wanderlust.</h1>
         </div>
       </div>
 
@@ -113,7 +113,7 @@ export default function LoginForm() {
       <div className="text-center mb-6">
         <h2 className="text-xl font-bold text-gray-900 mb-1">Đăng nhập</h2>
         <p className="text-gray-600 text-sm">
-          Chào mừng bạn trở lại! Đăng nhập để tiếp tục khám phá thế giới.
+          Chào mừng bạn trở lại!   Đăng nhập để tiếp tục khám phá thế giới.
         </p>
       </div>
 

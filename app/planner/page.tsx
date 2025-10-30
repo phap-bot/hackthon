@@ -1,17 +1,23 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import Layout from '../components/Layout'
+import PageHeader from '../components/PageHeader'
 import UserMenu from '../components/UserMenu'
 import AdvancedFilters, { AdvancedFiltersData } from '../components/Planner/AdvancedFilters'
+import DestinationAutocomplete, { SuggestionItem } from '../components/Planner/DestinationAutocomplete'
+import NearbySuggestions from '../components/Planner/NearbySuggestions'
+import OllamaLocationResearch from '../components/Planner/OllamaLocationResearch'
 
 interface PlannerFormData {
   budget: string
   people: number
   days: number
   destination: string
+  destinationLat?: number
+  destinationLng?: number
   startDate: string
   travelStyle: string
   interests: string[]
@@ -92,24 +98,36 @@ const PlannerPage = () => {
         people: formData.people,
       }
 
-      // Call AI backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/itinerary/generate`, {
+      // Call internal planner API (proxy to backend)
+      const response = await fetch(`/api/travel-planner`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          preferences,
-          location: { lat: 13.782, lon: 109.219 } // Fallback location
+          budget: formData.budget,
+          people: formData.people,
+          days: formData.days,
+          destination: preferences.region,
+          startDate: formData.startDate || new Date().toISOString().slice(0,10),
+          travelStyle: formData.advancedFilters.travelStyle[0] || 'tự túc',
+          interests: formData.advancedFilters.tripType,
+          location: { lat: formData.destinationLat || 13.782, lon: formData.destinationLng || 109.219 }
         }),
       })
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Generated itinerary:', result)
-        // Store result in localStorage and redirect
-        localStorage.setItem('currentItinerary', JSON.stringify(result.data))
-        router.push(`/itinerary/detail/temp`)
+        // 暂存输入，用于 detail 页面再拉取 tripId 详情
+        localStorage.setItem('lastPlannerInput', JSON.stringify({
+          budget: formData.budget,
+          people: formData.people,
+          days: formData.days,
+          destination: preferences.region,
+          lat: formData.destinationLat,
+          lng: formData.destinationLng
+        }))
+        router.push(`/itinerary/detail/${result.tripId || 'temp'}`)
       } else {
         const errorText = await response.text()
         console.error('Error response:', errorText)
@@ -127,14 +145,15 @@ const PlannerPage = () => {
     <Layout showSidebar={false}>
       {/* Sticky Navbar */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
+            <div className="flex items-center gap-2 text-gray-800 dark:text-white">
+              <span className="material-symbols-outlined text-primary text-3xl">travel_explore</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">TravelPlaner</span>
+              <h1 className="text-2xl font-bold">Wanderlust</h1>
+              
             </div>
 
             {/* Menu Items */}
@@ -153,35 +172,22 @@ const PlannerPage = () => {
         </div>
       </nav>
 
+      {/* Page Header */}
+      <PageHeader 
+        title="Tạo lịch trình" 
+        subtitle="Cá nhân hóa chuyến đi của bạn với trí tuệ nhân tạo"
+      />
+
       {/* Subheader with Context */}
       <div className="bg-blue-50/50 backdrop-blur-sm border-b border-blue-100">
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
-            {/* Breadcrumb with Back Button */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.back()}
-                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <ArrowLeftIcon className="w-4 h-4" />
-                Quay lại
-              </button>
-              <span className="text-gray-400">|</span>
-              <span className="text-sm text-gray-600">Tạo lịch trình</span>
-            </div>
-
-            {/* Page Title and Description - Centered */}
-            <div className="text-center flex-1">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2 font-['Inter']">
-                Tạo lịch trình với AI
-              </h1>
-              <p className="text-gray-500 text-lg">
-                Cá nhân hóa chuyến đi của bạn với trí tuệ nhân tạo
-              </p>
-            </div>
-
-            {/* Right side - Empty for balance */}
-            <div className="w-32"></div>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2 font-['Inter']">
+              Tạo lịch trình với AI
+            </h1>
+            <p className="text-gray-500 text-lg">
+              Cá nhân hóa chuyến đi của bạn với trí tuệ nhân tạo
+            </p>
           </div>
         </div>
       </div>
@@ -240,7 +246,25 @@ const PlannerPage = () => {
           <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông tin cơ bản</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Destination autocomplete */}
+          <div className="md:col-span-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xs">📍</span>
+              </div>
+              Điểm đến (tỉnh/thành phố)
+            </label>
+            <DestinationAutocomplete
+              value={formData.destination}
+              onSelect={(item: SuggestionItem) => {
+                handleInputChange('destination', item.name)
+                handleInputChange('destinationLat', item.lat)
+                handleInputChange('destinationLng', item.lng)
+              }}
+            />
+          </div>
+
               {/* Number of People */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
@@ -283,6 +307,23 @@ const PlannerPage = () => {
 
           {/* Advanced Filters Section */}
           <AdvancedFilters onFiltersChange={handleAdvancedFiltersChange} />
+
+      {/* AI research based on user's searched destination (no GPS) */}
+      {formData.destination && (
+        <OllamaLocationResearch locationName={formData.destination} />
+      )}
+
+      {/* Map-based nearby (optional) still available if lat/lng chosen) */}
+      {formData.destinationLat && formData.destinationLng && (
+        <NearbySuggestions
+          lat={formData.destinationLat}
+          lng={formData.destinationLng}
+          categories={formData.advancedFilters.tripType.includes('Ẩm thực') ? 'catering.restaurant' : 'tourist_attraction'}
+          onSelect={(p) => {
+            alert(`Đã chọn địa điểm: ${p.name}`)
+          }}
+        />
+      )}
 
           {/* Submit Button */}
           <div className="flex justify-center pt-8">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import SummaryBar from '../components/SummaryBar';
+import PageHeader from '../components/PageHeader';
 import GeoapifyMapWrapper from '../components/Map/GeoapifyMapWrapper';
 import LoginModal from '../components/Auth/LoginModal';
 import { useAuth } from '../hooks/useAuth';
@@ -33,6 +34,7 @@ const MapsPage: React.FC = () => {
   const [radius, setRadius] = useState(5000);
   const [places, setPlaces] = useState<Place[]>([]);
   const [showRoute, setShowRoute] = useState(false);
+  const [centerOverride, setCenterOverride] = useState<{lat:number; lng:number} | null>(null);
 
   const categories = [
     { value: 'catering.restaurant', label: '🍽️ Nhà hàng', icon: '🍽️' },
@@ -45,8 +47,15 @@ const MapsPage: React.FC = () => {
 
   // Manual location refresh (reload page)
   const getCurrentLocation = () => {
-    window.location.reload();
+    setCenterOverride(null); // back to realtime GPS
   };
+
+  const quickCenters = [
+    { label: 'Hà Nội', coords: { lat: 21.0285, lng: 105.8542 } },
+    { label: 'TP.HCM', coords: { lat: 10.8231, lng: 106.6297 } },
+    { label: 'Đà Nẵng', coords: { lat: 16.0544, lng: 108.2022 } },
+    { label: 'Quy Nhơn', coords: { lat: 13.782, lng: 109.219 } },
+  ];
 
   const handlePlaceSelect = (place: Place) => {
     setSelectedPlace(place);
@@ -79,6 +88,12 @@ const MapsPage: React.FC = () => {
       <Header />
       <SummaryBar currentPage="Bản đồ thông minh" showBackButton={true} />
       
+      {/* Page Header */}
+      <PageHeader 
+        title="Bản đồ địa điểm" 
+        subtitle="Tìm kiếm và khám phá các địa điểm xung quanh"
+      />
+      
       {/* Header Controls */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,7 +111,15 @@ const MapsPage: React.FC = () => {
               >
                 📍 Vị trí của tôi
               </button>
-              {/* Optional location buttons (future feature) */}
+              {quickCenters.map((c) => (
+                <button
+                  key={c.label}
+                  onClick={() => setCenterOverride(c.coords)}
+                  className={`px-4 py-2 rounded-lg text-sm ${centerOverride?.lat===c.coords.lat? 'bg-gray-700 text-white':'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                >
+                  {c.label}
+                </button>
+              ))}
               {selectedPlaces.length >= 2 && (
                 <>
                   <button
@@ -172,6 +195,7 @@ const MapsPage: React.FC = () => {
                 selectedPlaces={selectedPlaces}
                 showRoute={showRoute}
                 height="600px"
+                centerOverride={centerOverride}
               />
             </div>
           </div>

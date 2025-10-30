@@ -22,7 +22,7 @@ export default function RegisterForm() {
   // Show success state when registration is successful
   if (registrationSuccess) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 p-6">
         <div className="text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
@@ -142,7 +142,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 p-6">
       {/* Logo */}
       <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-2 mb-3">

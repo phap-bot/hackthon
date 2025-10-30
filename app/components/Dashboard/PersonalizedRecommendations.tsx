@@ -1,5 +1,6 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useSmartGeolocation } from '@/app/hooks/useSmartGeolocation'
 
 interface Recommendation {
   destination_suggestions: Array<{
@@ -46,6 +47,41 @@ export default function PersonalizedRecommendations({
   preferences,
   loadingPreferences
 }: PersonalizedRecommendationsProps) {
+  // Realtime GPS-based nearby suggestions (SerpAPI via our API)
+  const { location } = useSmartGeolocation()
+  const [nearby, setNearby] = useState<any[]>([])
+  const [nearbyLoading, setNearbyLoading] = useState(false)
+  const [radius, setRadius] = useState(5000)
+
+  useEffect(() => {
+    const fetchNearby = async () => {
+      if (!location) return
+      try {
+        setNearbyLoading(true)
+        const categories = 'tourist_attraction'
+        const resp = await fetch(`/api/maps/nearby?lat=${location.lat}&lng=${location.lng}&categories=${categories}&radius=${radius}&limit=8`)
+        const data = await resp.json()
+        const places = Array.isArray(data) ? data : data.places || []
+        setNearby(places)
+      } catch {
+        setNearby([])
+      } finally {
+        setNearbyLoading(false)
+      }
+    }
+    fetchNearby()
+  }, [location, radius])
+
+  const gpsDestinations = useMemo(() => {
+    return nearby.slice(0, 4).map((p: any) => ({
+      name: p.name,
+      country: p.address || '',
+      rating: p.rating || 4.2,
+      price_range: 'trung_binh',
+      image: p.thumbnail,
+    }))
+  }, [nearby])
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -58,7 +94,7 @@ export default function PersonalizedRecommendations({
     )
   }
 
-  if (!recommendations || !recommendations.destination_suggestions) {
+  if ((!recommendations || !recommendations.destination_suggestions) && gpsDestinations.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
@@ -81,8 +117,8 @@ export default function PersonalizedRecommendations({
     )
   }
 
-  const destinations = recommendations.destination_suggestions || []
-  const activities = recommendations.activity_recommendations || []
+  const destinations = gpsDestinations.length > 0 ? gpsDestinations : (recommendations?.destination_suggestions || [])
+  const activities = recommendations?.activity_recommendations || []
 
   return (
     <div className="space-y-8">
@@ -95,7 +131,11 @@ export default function PersonalizedRecommendations({
           {destinations.slice(0, 4).map((destination, index) => (
             <div key={index} className="relative group rounded-xl overflow-hidden shadow-lg">
               <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                <span className="material-symbols-outlined text-6xl text-white">location_on</span>
+                {destination.image ? (
+                  <img src={destination.image} alt={destination.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="material-symbols-outlined text-6xl text-white">location_on</span>
+                )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
               <div className="absolute top-2 right-2 bg-primary/80 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">

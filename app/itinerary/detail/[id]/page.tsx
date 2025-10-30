@@ -146,7 +146,7 @@ export default function ItineraryDetailPage() {
               <button onClick={() => router.back()} className="text-primary">
                 <span className="material-symbols-outlined text-2xl">arrow_back</span>
               </button>
-              <h1 className="text-xl font-bold">Travel Planner</h1>
+              <h1 className="text-xl font-bold">Wanderlust</h1>
             </div>
             <div className="flex items-center gap-4">
               <button 

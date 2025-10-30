@@ -68,7 +68,7 @@ export default function HamburgerMenu({ isOpen, onClose }: HamburgerMenuProps) {
       name: 'Scan địa điểm',
       description: 'Quét QR code',
       color: 'text-cyan-500',
-      route: '/scan'
+      route: '/scan-location'
     }
   ]
 

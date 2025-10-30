@@ -33,43 +33,50 @@ export default function SummaryBar({ currentPage = 'Dashboard', showBackButton =
       icon: HomeIcon,
       name: 'Trang chủ',
       description: 'Dashboard chính',
-      color: 'text-blue-500'
+      color: 'text-blue-500',
+      route: '/dashboard'
     },
     {
       icon: StarIcon,
       name: 'Tạo lịch trình',
       description: 'AI tạo lịch trình',
-      color: 'text-purple-500'
+      color: 'text-purple-500',
+      route: '/planner'
     },
     {
       icon: MapIcon,
       name: 'Bản đồ',
       description: 'Khám phá địa điểm',
-      color: 'text-green-500'
+      color: 'text-green-500',
+      route: '/map-demo'
     },
     {
       icon: MagnifyingGlassIcon,
       name: 'Khám phá',
       description: 'Tìm điểm đến',
-      color: 'text-orange-500'
+      color: 'text-orange-500',
+      route: '/map-demo'
     },
     {
       icon: DocumentTextIcon,
       name: 'Lịch trình',
       description: 'Quản lý chuyến đi',
-      color: 'text-indigo-500'
+      color: 'text-indigo-500',
+      route: '/itinerary'
     },
     {
       icon: CalendarDaysIcon,
       name: 'Booking',
       description: 'Đặt chỗ',
-      color: 'text-pink-500'
+      color: 'text-pink-500',
+      route: '/booking'
     },
     {
       icon: QrCodeIcon,
       name: 'Scan địa điểm',
       description: 'Quét QR code',
-      color: 'text-cyan-500'
+      color: 'text-cyan-500',
+      route: '/scan-location'
     }
   ]
 
@@ -100,8 +107,9 @@ export default function SummaryBar({ currentPage = 'Dashboard', showBackButton =
             {features.map((feature, index) => {
               const IconComponent = feature.icon
               return (
-                <div
+                <button
                   key={index}
+                  onClick={() => router.push(feature.route)}
                   className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 group"
                   title={`${feature.name}: ${feature.description}`}
                 >
@@ -109,7 +117,7 @@ export default function SummaryBar({ currentPage = 'Dashboard', showBackButton =
                   <span className="text-xs font-medium text-gray-600 dark:text-gray-300 hidden xl:block">
                     {feature.name}
                   </span>
-                </div>
+                </button>
               )
             })}
           </div>
@@ -121,8 +129,9 @@ export default function SummaryBar({ currentPage = 'Dashboard', showBackButton =
             {features.slice(0, 4).map((feature, index) => {
               const IconComponent = feature.icon
               return (
-                <div
+                <button
                   key={index}
+                  onClick={() => router.push(feature.route)}
                   className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                   title={`${feature.name}: ${feature.description}`}
                 >
@@ -130,7 +139,7 @@ export default function SummaryBar({ currentPage = 'Dashboard', showBackButton =
                   <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                     {feature.name}
                   </span>
-                </div>
+                </button>
               )
             })}
             <div className="text-xs text-gray-500 dark:text-gray-400">

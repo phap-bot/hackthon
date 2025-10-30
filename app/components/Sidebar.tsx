@@ -64,8 +64,8 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     {
       icon: QrCodeIcon,
       label: 'Scan địa điểm',
-      href: '/scan',
-      isActive: pathname === '/scan'
+      href: '/scan-location',
+      isActive: pathname === '/scan-location'
     },
     {
       icon: Cog6ToothIcon,
@@ -178,7 +178,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 Travel Explorer
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-500">
-                Powered by AI
+                Powered by NPT-Team
               </p>
             </div>
           ) : (

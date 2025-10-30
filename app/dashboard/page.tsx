@@ -194,11 +194,10 @@ export default function DashboardPage() {
           <div className="relative bg-gray-50 dark:bg-gray-900/50 py-16 overflow-hidden">
             <img 
               alt="Vịnh Hạ Long" 
-              className="absolute inset-0 w-full h-full object-cover object-center opacity-20 dark:opacity-10" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIsiIZwyIGammpDtlwvti5ki1CZY83-NeURJ50c77xoZQQ3pw_E106fjhhhES8hqeeC2AK17Lq7vp5_h2ohq4eIxsgtMrmWLNku7d0Auvwdq8LqPE7oQIbDGflxMXJHnBnNbMQ5ulOKTVY7-GmmhNOS9iQwW3FsvQvrxHzLWOl1ex2Yzb8A7VkguPmYwvXEnRpi1zp2dazKJeSaTZWGjC34zUfZW9oIeZVesomUDP4ebvfriQPoQCAnJoZuce1sCL-MGypFft3wxI" 
-            />
+              className="absolute inset-0 w-full h-full object-cover object-center opacity-200 dark:opacity- 20" 
+              src="/images/db2.jpg" />
             <div className="absolute inset-0 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent"></div>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-0">
               <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Chào mừng trở lại, {user?.full_name || user?.username || 'An'}!</h2>
               <p className="mt-2 text-gray-600 dark:text-gray-300">Khám phá vẻ đẹp Việt Nam ngay từ đây. Bảng điều khiển của bạn đã sẵn sàng!</p>
             </div>

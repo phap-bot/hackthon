@@ -94,7 +94,7 @@ export default function Home() {
           <img 
             alt="Cảnh đẹp Việt Nam" 
             className="absolute inset-0 w-full h-full object-cover object-center" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwlB3tkJgiOFkwh6fmNIhVzZhl8XNb3lqa7Ef7xfFrHDixBxCHVnW55_JPhAU6wrDJOOdO1UABTM2raMmdHXuUVgi2B-ueru6E8KRWG1km4n8IZKsH3b_5YVNDxjILMhmb2L1JroJAGO5OIw0CtlaHj3lBXrcRPOS1v6Q4DwbrO4Macc4A0LS7_4D5V6rvpeyQ0Uxwlt2Yaqe5qEez6Lk9orgSD7FzgPo8U_sx7f-C5t6MIYuLWYuxfPVv2iAYbmaon7OhSQAifgQ"
+            style={{ backgroundImage: "url('/images/bg.jpg')" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10"></div>
           
@@ -158,11 +158,8 @@ export default function Home() {
                 </div>
                 <div className="order-1 lg:order-2">
                   <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-2xl">
-                    <img 
-                      alt="Demo tạo lịch trình" 
-                      className="rounded-lg w-full" 
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxCwCrKsA5hDbnXXHKQvx_Qb3oiZkiqeHkENtW1JpqNL6R-XSwt5s1kK06T7yTxdpcv2MmZXNeBX-Q17ZRypjww2h0LU2IM6T4mV0RwOyOnN7Pio9weKbLw9vhIPwutXWTCodAMtKA01vfyGA1mnK8RCMqz9r8wiWvAjuEtqWSnYb_6cmfZ1oHoNpSn3CDJHDiZPH-U_dYxN--kVfoAwRmJl1gfLuHp0I2Qjnc1EoCPhVGCRZqZ984yiPa-FooKs9Vj3JPVKebmA0"
-                    />
+                    <img src="/images/ai.jpg" alt="demo AI" className="w-max h-max" />
+                              
                   </div>
                 </div>
               </div>
@@ -173,11 +170,9 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
                   <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-2xl">
-                    <img 
-                      alt="Demo bản đồ giao thông" 
-                      className="rounded-lg w-full" 
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxCwCrKsA5hDbnXXHKQvx_Qb3oiZkiqeHkENtW1JpqNL6R-XSwt5s1kK06T7yTxdpcv2MmZXNeBX-Q17ZRypjww2h0LU2IM6T4mV0RwOyOnN7Pio9weKbLw9vhIPwutXWTCodAMtKA01vfyGA1mnK8RCMqz9r8wiWvAjuEtqWSnYb_6cmfZ1oHoNpSn3CDJHDiZPH-U_dYxN--kVfoAwRmJl1gfLuHp0I2Qjnc1EoCPhVGCRZqZ984yiPa-FooKs9Vj3JPVKebmA0"
-                    />
+                    <img src="/images/map.jpg" alt="demo map" className="w-max h-max" />
+                     
+            
                   </div>
                 </div>
                 <div>

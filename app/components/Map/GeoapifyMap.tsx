@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useUserLocation } from "../../hooks/useUserLocation";
+// 位置由上层传入的 center 控制，避免在此重复订阅位置
 
 // 修复 Leaflet 默认图标问题
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -43,6 +43,16 @@ interface RouteData {
   instructions?: Array<{ instruction: string; distance: number; time: number }>;
 }
 
+interface WeatherData {
+  temperature: number;
+  description: string;
+  icon: string;
+  humidity: number;
+  windSpeed: number;
+  city: string;
+  country: string;
+}
+
 interface GeoapifyMapProps {
   center?: UserLocation;
   zoom?: number;
@@ -58,12 +68,38 @@ interface GeoapifyMapProps {
 }
 
 // 内部组件：自动更新地图中心
-const MapUpdater: React.FC<{ center: [number, number]; zoom: number }> = ({ center, zoom }) => {
+const MapUpdater: React.FC<{ center: [number, number] }> = ({ center }) => {
+  const map = useMap();
+  useEffect(() => {
+    // Preserve current zoom when recentring (avoids locking user zoom)
+    map.setView(center, map.getZoom());
+  }, [center, map]);
+  return null;
+};
+
+const MapZoomUpdater: React.FC<{ zoom: number }> = ({ zoom }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setZoom(zoom);
+  }, [zoom, map]);
+  return null;
+};
+
+// 内部组件：处理地图点击事件
+const MapClickHandler: React.FC<{ onMapClick: (e: any) => void }> = ({ onMapClick }) => {
   const map = useMap();
   
   useEffect(() => {
-    map.setView(center, zoom);
-  }, [center, zoom, map]);
+    const handleClick = (e: any) => {
+      onMapClick(e);
+    };
+    
+    map.on('click', handleClick);
+    
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [map, onMapClick]);
   
   return null;
 };
@@ -128,23 +164,12 @@ const GeoapifyMap: React.FC<GeoapifyMapProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [route, setRoute] = useState<RouteData | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [clickedLocation, setClickedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const mapCenter: [number, number] = [center.lat, center.lng];
-  const GeoapifyMap = () => {
-    const { location, error, loading } = useUserLocation();
-    const map = useMap();
-
-    useEffect(() => {
-      if (location) {
-        console.log("📍 Vị trí hiện tại:", location);
-        map.setView([location.lat, location.lon], 15);
-      }
-    }, [location]);
-  
-    if (loading) return <p>Đang xác định vị trí...</p>;
-    if (error) return <p>{error}</p>;
-  
-    return <div id="map" className="h-full w-full" />;
-  };
+  const radiusToZoom = (r: number) => (r <= 1500 ? 16 : r <= 3000 ? 15 : r <= 6000 ? 14 : r <= 12000 ? 13 : 12);
+  const [zoomState, setZoomState] = useState<number>(radiusToZoom(radius));
   // 获取路线
 // 获取附近的场所
 const fetchNearbyPlaces = useCallback(async () => {
@@ -152,9 +177,8 @@ const fetchNearbyPlaces = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-    const response = await fetch(
-      `${backendUrl}/api/maps/geoapify/nearby?lat=${center.lat}&lng=${center.lng}&categories=${categories}&radius=${radius}&limit=20`
+  const response = await fetch(
+      `/api/maps/nearby?lat=${center.lat}&lng=${center.lng}&categories=${categories}&radius=${radius}&limit=20`
     );
 
     if (!response.ok) {
@@ -190,7 +214,31 @@ useEffect(() => {
     
     return () => clearTimeout(timeoutId);
   }
-}, [center, fetchNearbyPlaces]);
+  }, [center, fetchNearbyPlaces]);
+
+  // Update zoom when radius changes
+  useEffect(() => {
+    setZoomState(radiusToZoom(radius));
+  }, [radius]);
+
+  // 获取天气信息
+  const fetchWeather = useCallback(async (lat: number, lng: number) => {
+    try {
+      setWeatherLoading(true);
+      const response = await fetch(`/api/weather?lat=${lat}&lng=${lng}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch weather');
+      }
+      
+      const data = await response.json();
+      setWeather(data);
+    } catch (err) {
+      console.error('Error fetching weather:', err);
+    } finally {
+      setWeatherLoading(false);
+    }
+  }, []);
 
   // 获取路线
   const fetchRoute = useCallback(async (waypoints: Array<{ lat: number; lng: number }>) => {
@@ -201,9 +249,7 @@ useEffect(() => {
 
     try {
       setRouteLoading(true);
-      
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-      const response = await fetch(`${backendUrl}/api/maps/geoapify/route`, {
+      const response = await fetch(`/api/maps/route`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -245,6 +291,28 @@ useEffect(() => {
     }
   }, [showRoute, selectedPlaces, fetchRoute]);
 
+  // 获取当前位置的天气
+  useEffect(() => {
+    if (center?.lat && center?.lng) {
+      fetchWeather(center.lat, center.lng);
+    }
+  }, [center, fetchWeather]);
+
+  // 处理地图点击事件
+  const handleMapClick = useCallback((e: any) => {
+    const { lat, lng } = e.latlng;
+    setClickedLocation({ lat, lng });
+    
+    // 从当前位置到点击位置绘制路线
+    if (center?.lat && center?.lng) {
+      const waypoints = [
+        { lat: center.lat, lng: center.lng },
+        { lat, lng }
+      ];
+      fetchRoute(waypoints);
+    }
+  }, [center, fetchRoute]);
+
 
   const handleMarkerClick = (place: Place) => {
     setSelectedPlace(place);
@@ -272,35 +340,21 @@ useEffect(() => {
       
       <MapContainer
         center={mapCenter}
-        zoom={zoom}
+        zoom={zoomState}
         style={{ height: '100%', width: '100%' }}
         zoomControl={true}
         scrollWheelZoom={true}
       >
-        <MapUpdater center={mapCenter} zoom={zoom} />
+        <MapUpdater center={mapCenter} />
+        <MapZoomUpdater zoom={zoomState} />
+        <MapClickHandler onMapClick={handleMapClick} />
         
-        {/* Geoapify Tile Layer */}
+        {/* Base tiles switched to OpenStreetMap (data via SerpAPI for places) */}
         <TileLayer
-          attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={`https://maps.geoapify.com/v1/tile/carto/{z}/{x}/{y}.png?&apiKey=${process.env.NEXT_PUBLIC_GEOAPIFY_KEY || 'e21572c819734004b50cce6f8b52e171'}`}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {/* 用户位置标记 */}
-        <Marker position={mapCenter} icon={L.icon({
-          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-        })}>
-          <Popup>
-            <div className="text-center">
-              <p className="font-semibold text-blue-600">Vị trí của bạn</p>
-              <p className="text-xs text-gray-500">
-                {center.lat.toFixed(4)}, {center.lng.toFixed(4)}
-              </p>
-            </div>
-          </Popup>
-        </Marker>
         
         {/* 路线显示 */}
         {route && route.waypoints && route.waypoints.length > 0 && (
@@ -312,11 +366,13 @@ useEffect(() => {
           />
         )}
         
-        {/* 已选择的场所标记 */}
-        {selectedPlaces.map((place, index) => (
+        {/* Radius circle */}
+        <Circle center={mapCenter} radius={radius} pathOptions={{ color: '#3B82F6', fillOpacity: 0.05 }} />
+
+        {/* 点击位置标记 */}
+        {clickedLocation && (
           <Marker
-            key={`selected_${place.id}`}
-            position={[place.coordinates.lat, place.coordinates.lng]}
+            position={[clickedLocation.lat, clickedLocation.lng]}
             icon={L.icon({
               iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
               iconSize: [25, 41],
@@ -326,12 +382,15 @@ useEffect(() => {
           >
             <Popup>
               <div className="text-center">
-                <p className="font-semibold text-red-600">{place.name}</p>
-                <p className="text-xs text-gray-500">Điểm {index + 1}</p>
+                <p className="font-semibold text-red-600">Vị trí đã chọn</p>
+                <p className="text-xs text-gray-500">
+                  {clickedLocation.lat.toFixed(4)}, {clickedLocation.lng.toFixed(4)}
+                </p>
               </div>
             </Popup>
           </Marker>
-        ))}
+        )}
+        
         
         {/* 场所标记 */}
         {places.map((place) => (
@@ -354,65 +413,59 @@ useEffect(() => {
                   <span className="text-xs text-gray-500">({place.reviews_count})</span>
                 </div>
                 
-                {place.phone && (
-                  <p className="text-xs text-gray-500 mb-1">📞 {place.phone}</p>
-                )}
                 
-                <div className="mt-3 flex gap-2">
-                  <button
-                    onClick={() => handleMarkerClick(place)}
-                    className="flex-1 bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"
-                  >
-                    Xem chi tiết
-                  </button>
-                  {place.website && (
-                    <a
-                      href={place.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 bg-gray-500 text-white text-xs px-3 py-1 rounded hover:bg-gray-600 transition text-center"
-                    >
-                      Website
-                    </a>
-                  )}
-                </div>
+                 <div className="mt-3">
+                   <button
+                     onClick={() => handleMarkerClick(place)}
+                     className="w-full bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition"
+                   >
+                     Chọn địa điểm
+                   </button>
+                 </div>
               </div>
             </Popup>
           </Marker>
         ))}
       </MapContainer>
       
-      {/* Route Info */}
-      {route && route.distance && (
-        <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg px-4 py-2 z-[1000]">
-          <p className="text-sm font-semibold text-blue-600">📍 Đường đi</p>
-          <p className="text-xs text-gray-600">
-            Khoảng cách: {(route.distance / 1000).toFixed(2)} km
-          </p>
-          {route.time && (
-            <p className="text-xs text-gray-600">
-              Thời gian: {Math.round(route.time / 60)} phút
-            </p>
-          )}
-        </div>
-      )}
-      
-      {/* Route Loading */}
-      {routeLoading && (
-        <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg px-4 py-2 z-[1000]">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-            <span className="text-sm text-gray-600">Đang tính toán đường đi...</span>
+      {/* 天气信息 */}
+      {weather && (
+        <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg px-4 py-3 z-[1000] min-w-[200px]">
+          <div className="flex items-center gap-3">
+            <img 
+              src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} 
+              alt={weather.description}
+              className="w-12 h-12"
+            />
+            <div>
+              <p className="text-lg font-semibold text-gray-900">
+                {Math.round(weather.temperature)}°C
+              </p>
+              <p className="text-sm text-gray-600 capitalize">
+                {weather.description}
+              </p>
+              <p className="text-xs text-gray-500">
+                {weather.city}, {weather.country}
+              </p>
+            </div>
+          </div>
+          <div className="mt-2 flex justify-between text-xs text-gray-500">
+            <span>💧 {weather.humidity}%</span>
+            <span>💨 {weather.windSpeed} m/s</span>
           </div>
         </div>
       )}
       
-      {/* 场所计数器 */}
-      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg px-4 py-2 z-[1000]">
-        <p className="text-sm text-gray-600">
-          Tìm thấy <span className="font-semibold text-blue-600">{places.length}</span> địa điểm
-        </p>
-      </div>
+      {/* 天气加载中 */}
+      {weatherLoading && (
+        <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg px-4 py-3 z-[1000]">
+          <div className="flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+            <span className="text-sm text-gray-600">Đang tải thời tiết...</span>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 };

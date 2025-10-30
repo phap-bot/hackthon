@@ -13,7 +13,8 @@ try:
     
     # Initialize Ollama (running on localhost:11434)
     OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    llm = Ollama(model="mistral", base_url=OLLAMA_HOST, temperature=0.7)
+    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+    llm = Ollama(model=OLLAMA_MODEL, base_url=OLLAMA_HOST, temperature=0.7)
     OLLAMA_AVAILABLE = True
 except ImportError:
     print("⚠️ Ollama not available, using template-based generation")

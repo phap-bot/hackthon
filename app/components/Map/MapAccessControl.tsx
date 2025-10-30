@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import PlacesMap from './PlacesMap';
+import GeoapifyMapWrapper from './GeoapifyMapWrapper';
 
 interface MapAccessControlProps {
   isLoggedIn: boolean;
@@ -52,7 +52,12 @@ const MapAccessControl: React.FC<MapAccessControlProps> = ({
         
         {/* Map Component */}
         <div className="h-[calc(100vh-80px)]">
-          <PlacesMap className="h-full" />
+          <GeoapifyMapWrapper
+            zoom={13}
+            categories="catering.restaurant"
+            radius={5000}
+            height="100%"
+          />
         </div>
       </div>
     );

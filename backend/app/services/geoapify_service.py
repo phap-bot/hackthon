@@ -116,12 +116,15 @@ class GeoapifyService:
             return self._get_mock_route(waypoints)
 
         url = f"{self.base_url}/v1/routing"
-        waypoint_str = "|".join([f"{p['lat']},{p['lon']}" for p in waypoints])
+        # Geoapify expects lon,lat order
+        waypoint_str = "|".join([f"{p['lon']},{p['lat']}" for p in waypoints])
         params = {"waypoints": waypoint_str, "mode": mode, "apiKey": self.api_key}
 
         try:
             async with httpx.AsyncClient(timeout=25.0) as client:
                 res = await client.get(url, params=params)
+                if res.status_code in (403, 429):
+                    return {"error": res.text, "status": res.status_code}
                 res.raise_for_status()
                 data = res.json()
 
@@ -132,7 +135,7 @@ class GeoapifyService:
             return {
                 "distance_m": prop.get("distance", 0),
                 "time_s": prop.get("time", 0),
-                "waypoints": [{"lat": c[1], "lon": c[0]} for c in coords],
+                "waypoints": [{"lat": c[1], "lng": c[0]} for c in coords],
                 "mode": mode,
             }
 

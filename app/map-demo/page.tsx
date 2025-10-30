@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import SummaryBar from '../components/SummaryBar';
+import PageHeader from '../components/PageHeader';
 import GeoapifyMapWrapper from '../components/Map/GeoapifyMapWrapper';
 import LoginModal from '../components/Auth/LoginModal';
 import { useAuth } from '../hooks/useAuth';
@@ -21,10 +21,7 @@ interface Place {
 
 const MapDemoPage: React.FC = () => {
   const { isLoggedIn, isLoading } = useAuth();
-  const [currentLocation, setCurrentLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [centerOverride, setCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('catering.restaurant');
   const [radius, setRadius] = useState(5000);
   const [places, setPlaces] = useState<Place[]>([]);
@@ -38,9 +35,9 @@ const MapDemoPage: React.FC = () => {
     setShowLoginModal(false);
   };
 
-  // Manual location refresh (reload page)
+  // Switch back to realtime GPS
   const getCurrentLocation = () => {
-    window.location.reload();
+    setCenterOverride(null);
   };
 
   const handlePlacesUpdate = (newPlaces: Place[]) => {
@@ -57,15 +54,19 @@ const MapDemoPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <SummaryBar currentPage="Bản đồ" showBackButton={true} />
       
-      {/* Header Controls */}
+      {/* Page Header */}
+      <PageHeader 
+        title="Bản đồ địa điểm" 
+        subtitle="Tìm kiếm và khám phá các địa điểm xung quanh"
+      />
+      
+      {/* Controls Section */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Bản đồ địa điểm</h1>
-              <p className="text-sm text-gray-600">Tìm kiếm và khám phá các địa điểm xung quanh</p>
+            <div className="flex-1">
+              {/* Empty space for balance */}
             </div>
             
             <div className="flex flex-wrap gap-2">
@@ -75,24 +76,20 @@ const MapDemoPage: React.FC = () => {
               >
                 📍 Vị trí của tôi
               </button>
-              <button
-                onClick={() => {
-                  // Optional: Future implementation to manually set location
-                  console.log('Hà Nội selected');
-                }}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm"
-              >
-                🏛️ Hà Nội
-              </button>
-              <button
-                onClick={() => {
-                  // Optional: Future implementation to manually set location
-                  console.log('TP.HCM selected');
-                }}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm"
-              >
-                🏙️ TP.HCM
-              </button>
+              {[
+                { label: 'Hà Nội', icon: '🏯', coords: { lat: 21.0285, lng: 105.8542 } },
+                { label: 'TP.HCM', icon: '🏙️', coords: { lat: 10.8231, lng: 106.6297 } },
+                { label: 'Đà Nẵng', icon: '🌉', coords: { lat: 16.0544, lng: 108.2022 } },
+                { label: 'Quy Nhơn', icon: '🏖️', coords: { lat: 13.782, lng: 109.219 } },
+              ].map((c) => (
+                <button
+                  key={c.label}
+                  onClick={() => setCenterOverride(c.coords)}
+                  className={`px-4 py-2 rounded-lg text-sm ${centerOverride?.lat===c.coords.lat? 'bg-gray-700 text-white':'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                >
+                  <span className="mr-1">{c.icon}</span>{c.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -142,6 +139,7 @@ const MapDemoPage: React.FC = () => {
             radius={radius}
             onPlacesUpdate={handlePlacesUpdate}
             height="600px"
+            centerOverride={centerOverride}
           />
         </div>
 

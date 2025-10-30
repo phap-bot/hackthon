@@ -9,6 +9,7 @@ export default function UserMenu() {
   const { user, logout } = useAuth()
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const [avatarKey, setAvatarKey] = useState(0)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   // Force re-render khi user data thay đổi
@@ -22,7 +23,7 @@ export default function UserMenu() {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        // Menu closes on click outside
+        setIsMenuOpen(false)
       }
     }
 
@@ -34,6 +35,7 @@ export default function UserMenu() {
 
   const handleLogout = () => {
     setShowLogoutModal(true)
+    setIsMenuOpen(false) // Đóng dropdown menu
   }
 
   const confirmLogout = () => {
@@ -44,6 +46,7 @@ export default function UserMenu() {
 
   const cancelLogout = () => {
     setShowLogoutModal(false)
+    setIsMenuOpen(false) // Đảm bảo dropdown vẫn đóng
   }
 
   const handleProfile = () => {
@@ -60,6 +63,7 @@ export default function UserMenu() {
         {/* User Avatar & Info */}
         <button
         className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+        onClick={() => setIsMenuOpen((v) => !v)}
       >
         <img 
           key={`avatar-${avatarKey}-${user?.avatar_url}`}
@@ -70,16 +74,21 @@ export default function UserMenu() {
                   console.log('UserMenu avatar load error, falling back to initials');
           }}
         />
-        <div className="hidden sm:block">
-          <p className="font-semibold text-gray-800 dark:text-white">{getDisplayName()}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Nhà thám hiểm</p>
-        </div>
         <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:rotate-180 transition-transform duration-300">expand_more</span>
       </button>
 
       {/* User Menu Dropdown */}
-      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 z-20">
+      <div className={`absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl transition-all duration-300 transform z-10 ${
+        isMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'
+      }`}>
           <div className="py-2">
+          {/* Header user info */}
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">{getDisplayName()}</p>
+            {user?.email && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{user.email}</p>
+            )}
+          </div>
           <a
               onClick={handleProfile}
             className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"

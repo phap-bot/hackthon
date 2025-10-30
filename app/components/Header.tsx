@@ -34,10 +34,10 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">🌍</span>
+          <div className="flex items-center gap-2 text-gray-800 dark:text-white">
+          <span className="material-symbols-outlined text-primary text-3xl">travel_explore</span>
             </div>
-            <h1 className="text-xl font-bold text-gray-800">TravelPlaner</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Wanderlust</h1>
           </div>
 
           {/* Navigation */}

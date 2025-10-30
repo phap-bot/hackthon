@@ -42,9 +42,6 @@ app/
 Tạo file `.env.local`:
 
 ```env
-# Google Maps API Key (Required)
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-google-maps-api-key-here
-
 # Backend API URL
 BACKEND_URL=http://localhost:8000
 

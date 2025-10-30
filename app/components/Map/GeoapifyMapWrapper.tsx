@@ -15,6 +15,7 @@ interface GeoapifyMapWrapperProps {
   showRoute?: boolean;
   className?: string;
   height?: string;
+  centerOverride?: { lat: number; lng: number } | null;
 }
 
 const GeoapifyMapWrapper: React.FC<GeoapifyMapWrapperProps> = ({
@@ -27,7 +28,8 @@ const GeoapifyMapWrapper: React.FC<GeoapifyMapWrapperProps> = ({
   selectedPlaces = [],
   showRoute = false,
   className = '',
-  height = '80vh'
+  height = '80vh',
+  centerOverride = null
 }) => {
   const { location, loading, error, isRealGPS } = useSmartGeolocation();
   const [userAddress, setUserAddress] = useState<string>('');
@@ -66,6 +68,8 @@ const GeoapifyMapWrapper: React.FC<GeoapifyMapWrapperProps> = ({
     );
   }
 
+  const effectiveCenter = centerOverride || location;
+
   return (
     <div className={`relative ${className}`}>
       {/* GPS Status Indicator */}
@@ -90,7 +94,7 @@ const GeoapifyMapWrapper: React.FC<GeoapifyMapWrapperProps> = ({
 
       {/* Main Map */}
       <GeoapifyMap
-        center={location}
+        center={effectiveCenter as any}
         zoom={zoom}
         categories={categories}
         radius={radius}
