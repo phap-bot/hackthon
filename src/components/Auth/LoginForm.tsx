@@ -1,8 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useAuth } from '../../hooks/useAuth'
-import { loginUser } from '../../lib/auth'
+import { useAuth } from '@/hooks/useAuth'
+import { loginUser } from '@/lib/auth'
 import toast from 'react-hot-toast'
 
 export default function LoginForm() {

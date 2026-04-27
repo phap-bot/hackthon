@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMandatoryGPS } from '../../hooks/useMandatoryGPS';
+import { useMandatoryGPS } from '@/hooks/useMandatoryGPS';
 
 interface MandatoryGPSProps {
   children: React.ReactNode;

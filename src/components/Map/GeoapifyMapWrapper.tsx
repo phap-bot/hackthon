@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import GeoapifyMap from './GeoapifyMap';
-import { useSmartGeolocation } from '../../hooks/useSmartGeolocation';
+import { useSmartGeolocation } from '@/hooks/useSmartGeolocation';
 
 interface GeoapifyMapWrapperProps {
   zoom?: number;

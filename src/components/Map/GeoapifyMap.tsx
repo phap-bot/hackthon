@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useUserLocation } from "../../hooks/useUserLocation";
+import { useUserLocation } from "@/hooks/useUserLocation";
 
 // 修复 Leaflet 默认图标问题
 delete (L.Icon.Default.prototype as any)._getIconUrl;

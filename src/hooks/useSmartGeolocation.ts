@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 interface Location {
   lat: number;
   lng: number;
+  address?: string;
 }
 
 // 计算两点之间的距离（米）

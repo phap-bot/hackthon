@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
-import { debugAPI } from '../lib/debug'
-import { apiRequest } from '../lib/auth'
+import { useAuth } from '@/hooks/useAuth'
+import { debugAPI } from '@/lib/debug'
+import { apiRequest } from '@/lib/auth'
 
 export default function DebugAuthPage() {
   const { user, isLoggedIn, isLoading } = useAuth()

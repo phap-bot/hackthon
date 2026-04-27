@@ -1,9 +1,9 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '../hooks/useAuth'
-import Layout from '../components/Layout'
-import AvatarUploadModal from '../components/AvatarUpload/AvatarUploadModal'
+import { useAuth } from '@/hooks/useAuth'
+import Layout from '@/components/Layout'
+import AvatarUploadModal from '@/components/AvatarUpload/AvatarUploadModal'
 import { 
   UserIcon,
   EnvelopeIcon,

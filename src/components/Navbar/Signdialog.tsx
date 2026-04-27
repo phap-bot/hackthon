@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { XMarkIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-import { useModal } from '../../contexts/ModalContext'
+import { useModal } from '@/contexts/ModalContext'
 
 const Signin = () => {
     let [isOpen, setIsOpen] = useState(false)

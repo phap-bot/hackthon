@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import SummaryBar from '../components/SummaryBar';
-import GeoapifyMapWrapper from '../components/Map/GeoapifyMapWrapper';
-import LoginModal from '../components/Auth/LoginModal';
-import { useAuth } from '../hooks/useAuth';
+import Header from '@/components/Header';
+import SummaryBar from '@/components/SummaryBar';
+import GeoapifyMapWrapper from '@/components/Map/GeoapifyMapWrapper';
+import LoginModal from '@/components/Auth/LoginModal';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Place {
   id: string;

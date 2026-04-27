@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import SummaryBar from '../components/SummaryBar';
-import SmartSuggestionsMap from '../components/Map/SmartSuggestionsMap';
-import LoginModal from '../components/Auth/LoginModal';
-import { useAuth } from '../hooks/useAuth';
-import { useMandatoryGPS } from '../hooks/useMandatoryGPS';
+import Header from '@/components/Header';
+import SummaryBar from '@/components/SummaryBar';
+import SmartSuggestionsMap from '@/components/Map/SmartSuggestionsMap';
+import LoginModal from '@/components/Auth/LoginModal';
+import { useAuth } from '@/hooks/useAuth';
+import { useMandatoryGPS } from '@/hooks/useMandatoryGPS';
 
 interface SmartPlace {
   id: string;

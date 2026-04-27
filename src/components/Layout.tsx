@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@/hooks/useAuth'
 import Sidebar from './Sidebar'
 import ProtectedRoute from './ProtectedRoute'
 

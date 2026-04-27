@@ -1,5 +1,5 @@
 import './globals.css';
-import { ModalProvider } from './contexts/ModalContext';
+import { ModalProvider } from '@/contexts/ModalContext';
 import { Providers } from './providers';
 
 export const metadata = {
@@ -19,7 +19,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Plus+Jakarta+Sans:wght@400;500;700;800" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
       </head>
-      <body className="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+      <body className="bg-surface font-display text-on-surface">
         <Providers>
           <ModalProvider>
             {children}

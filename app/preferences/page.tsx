@@ -1,8 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '../components/Header'
-import SummaryBar from '../components/SummaryBar'
+import Header from '@/components/Header'
+import SummaryBar from '@/components/SummaryBar'
 
 interface Preferences {
   travelTypes: string[]

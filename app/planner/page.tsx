@@ -3,9 +3,9 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-import Layout from '../components/Layout'
-import UserMenu from '../components/UserMenu'
-import AdvancedFilters, { AdvancedFiltersData } from '../components/Planner/AdvancedFilters'
+import Layout from '@/components/Layout'
+import UserMenu from '@/components/UserMenu'
+import AdvancedFilters, { AdvancedFiltersData } from '@/components/Planner/AdvancedFilters'
 
 interface PlannerFormData {
   budget: string
